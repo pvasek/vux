@@ -12,16 +12,9 @@ gulp.task('clean', function () {
     ]);
 });
 
-gulp.task('ts', ['clean'], function() {
-    console.log('loading tsconfig project...')
-    var tsProject = ts.createProject('tsconfig.json');
-    console.log('tsconfig loaded')
-  
-    return tsProject
-        .src()
-        .pipe(ts(tsProject))
-        .pipe(gulp.dest('./dist/ts'));
-});
+gulp.task('ts', ['clean'], shell.task([
+    'tsc'
+]));
 
 gulp.task('test:watch', ['test'], function() {
     gulp.watch(['**/*.ts'], ['test']);
@@ -29,7 +22,7 @@ gulp.task('test:watch', ['test'], function() {
 
 gulp.task('test-plugin', function() {
     return gulp.src(['./dist/ts/**/**/__tests__/*.js'], { read: false })
-        .pipe(mocha({ reporter: 'list' }))
+        .pipe(mocha({ reporter: 'spec' }))
         .on('error', function(err) { 
             gutil.log(err); 
             this.emit('end') 
@@ -38,4 +31,4 @@ gulp.task('test-plugin', function() {
 
 gulp.task('test', ['ts'], shell.task([
   'mocha ./dist/ts/**/**/__tests__/*.js',
-]));
+], { ignoreErrors: true }));

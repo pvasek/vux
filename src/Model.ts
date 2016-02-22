@@ -22,6 +22,7 @@ export class Model implements IModel {
         this.setStateItem = this.setStateItem.bind(this);
         this.signals = buildSignalsObject(template.actions, this.getStateItem, this.setStateItem);        
         this.rebuildModels(template.models, template.initialState);
+        this.rebuildStateProxy(template.initialState);
     }
     
     private toState(originalStateFormat: any): StateType {
@@ -42,11 +43,12 @@ export class Model implements IModel {
         const ownState = this.getCurrentState();
 
         const modelsState = Object.getOwnPropertyNames(this.models).reduce((acc, key) => {
-            acc[key] = this.models[key].getCurrentState()
+            const value = this.models[key].getCurrentState();
+            acc[key] = value;
             return acc; 
         }, {});
         
-        this.newState = ownState.merge(modelsState);        
+        this.newState = ownState.merge(modelsState);
         
         if (this.parent) {
             this.parent.propagateStateUp();
@@ -57,14 +59,19 @@ export class Model implements IModel {
     
     private rebuildModels(models: any,  state: StateType) {
         this.models = _.merge({}, models);
-        this.$state = buildStateProxyObject(state, models, this.getStateItem, this.setStateItem);        
         Object.getOwnPropertyNames(this.models).forEach(key => {
-            this.models[key].parent = this; 
-        });
+            const model = this.models[key];
+            model.key = key;
+            model.parent = this; 
+        });                               
+    }
+    
+    private rebuildStateProxy(state = this.state) {
+        this.$state = buildStateProxyObject(state, this.models, this.getStateItem, this.setStateItem);;
     }
     
     private getCurrentState() {
-        return this.newState || this.state;
+        return this.newState || this.state || this.toState(this.template.initialState);
     }
     
     initialize() {
@@ -78,5 +85,13 @@ export class Model implements IModel {
         Object.getOwnPropertyNames(this.models).forEach(key => {
             this.models[key].setState(this.getStateItem(key)); 
         });
+    }
+    
+    updateModels(models: any) {
+        this.rebuildModels(models, this.state);
+        const initalState = buildInitialStateObject(this.template.initialState, this.models, this.toState);
+        this.newState = initalState.merge(this.state);
+        this.propagateStateUp();
+        this.rebuildStateProxy();
     }
 }
