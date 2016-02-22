@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "allowJs": true,
+        "target": "es5",
+        "outDir": "dist/ts",
+        "jsx": "react",
+        "rootDir": ".",
+        "sourceMap": true,
+        "inlineSourceMap": false
+    },
+    
+    "exclude": [
+        "gulpfile.js",
+        ".vscode",
+        "node_modules",
+        
+        "dist",        
+        "examples/counters/dist"
+    ]
+}

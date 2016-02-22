@@ -1,0 +1,12 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Attach",
+			"type": "chrome",
+			"request": "attach",
+            "sourceMaps": true,    
+			"port": 9222
+		}
+	]
+}
