@@ -52,7 +52,7 @@ describe('Utils:', () => {
     
     describe('buildStateProxyObject', () => {
 
-        it('Should proxy to initalState', () => {
+        it('Should proxy state getter', () => {
             const initalState = {
                 message: 'messageValue'
             };            
@@ -61,6 +61,20 @@ describe('Utils:', () => {
             assert.equal(result.message, 'messageValue');
         });
         
+        it('Should proxy state setter', () => {
+            const initalState = {
+                message: 'messageValue'
+            };            
+            let lastValue = null;
+            const setter = (key, value) => {
+                assert.equal(key, 'message', 'setter.key');
+                lastValue = value;
+            }
+            const result = buildStateProxyObject(initalState, null, key => initalState[key], setter);
+            result.message = 'newMessageValue';
+            assert.equal(lastValue, 'newMessageValue');
+        });
+
         it('Should proxy to models', () => {
             const model: IModel = {
                 $state: { message2: 'message2Value' },                

@@ -1,4 +1,5 @@
 import * as Immutable from 'immutable';
+import * as _ from 'lodash';
 import { IModel, IModelTemplate } from './types';
 import { buildSignalsObject, buildInitialStateObject, buildStateProxyObject } from './utils';
 
@@ -17,8 +18,10 @@ export class Model implements IModel {
     constructor(template: IModelTemplate) {
         this.key = template.key || 'ROOT';
         this.template = template;
+        this.getStateItem = this.getStateItem.bind(this);
+        this.setStateItem = this.setStateItem.bind(this);
         this.signals = buildSignalsObject(template.actions, this.getStateItem, this.setStateItem);        
-        this.rebuildModels(template.models, this.toState(template.initialState));
+        this.rebuildModels(template.models, template.initialState);
     }
     
     private toState(originalStateFormat: any): StateType {
@@ -26,11 +29,11 @@ export class Model implements IModel {
     }
     
     private getStateItem(key: string): any {
-        return this.state.get('key');
+        return this.state.get(key);
     }
     
     private setStateItem(key: string, value: any) {
-        this.newState = this.state.set('key', value);
+        this.newState = this.state.set(key, value);
         this.propagateStateUp();
     }
     
@@ -54,7 +57,7 @@ export class Model implements IModel {
     
     private rebuildModels(models: any,  state: StateType) {
         this.models = _.merge({}, models);
-        this.$state = buildStateProxyObject(state, models, this.getStateItem);
+        this.$state = buildStateProxyObject(state, models, this.getStateItem, this.setStateItem);        
         Object.getOwnPropertyNames(this.models).forEach(key => {
             this.models[key].parent = this; 
         });

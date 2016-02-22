@@ -1,8 +1,8 @@
 export interface IModel {
     key?: string;
-    signals: {};    
-    models: {};
-    $state: {};
+    signals: any;    
+    models: any;
+    $state: any;
 };
 
 export interface IModelTemplateActions {

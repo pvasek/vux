@@ -10,6 +10,10 @@ export const buildSignalsObject = (
     getStateItem: GetStateItem, 
     setStateItem: SetStateItem): IModelSignals => {
 
+    if (!actions) {
+        return {};
+    }
+    
     const signalToAction = (key: string, action: Function) => {
         return (...args) => { 
             const actionResult = action(getStateItem(key), ...args);
@@ -33,18 +37,33 @@ export const buildInitialStateObject = (initialState: any, models: IModelTemplat
     return toState(_.merge({}, initialState, modelStates));
 }
 
-export const buildStateProxyObject = (initialState: any, models: IModelTemplateModels, getStateItem: GetStateItem): any => {
+export const buildStateProxyObject = (initialState: any, models: IModelTemplateModels, getStateItem: GetStateItem, setStateItem: SetStateItem = null): any => {
     
     const modelGetter = (key: string) => () => models[key].$state;
-    const stateGetter = (key: string) => () => getStateItem(key);
+    const stateGetter = function(key: string) { 
+        return function() {
+            return getStateItem(key); 
+        } 
+    };
+    const stateSetter = function(key: string) { 
+        return function(value: any) {
+            return setStateItem(key, value); 
+        } 
+    };
 
-    let proxy = models ? Object.getOwnPropertyNames(models).reduce((result, key) => {
-        Object.defineProperty(result, key, { get: modelGetter(key) });
+
+    let proxy = models ? Object.getOwnPropertyNames(models).reduce(function(result, key) {
+        Object.defineProperty(result, key, { 
+            get: modelGetter(key)
+        });
         return result;
     }, {}) : {};
 
-    proxy = initialState ? Object.getOwnPropertyNames(initialState).reduce((result, key) => {
-        Object.defineProperty(result, key, { get: stateGetter(key) });
+    proxy = initialState ? Object.getOwnPropertyNames(initialState).reduce(function(result, key) {
+        Object.defineProperty(result, key, { 
+            get: stateGetter(key),
+            set: stateSetter(key) 
+        });
         return result;
     }, proxy) : proxy;
     
