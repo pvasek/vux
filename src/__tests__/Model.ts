@@ -54,6 +54,36 @@ describe('Model:', () => {
             target.signals.updateValue(5);
             assert.equal(target.state.get('value'), 5, 'state.get("value")');
             assert.equal(target.$state.value, 5, '$state.value');    
+        });
+        
+        it('Should notify subscribers after changing state', () => {
+            const modelTemplate: IModelTemplate = {
+                initialState: {
+                    value: 0
+                },
+                actions: {
+                    updateValue(state: any, value: number) {
+                        return state.set('value', value);
+                    }
+                }
+            }
+            const target = new Model(modelTemplate);
+            target.initialize();
+
+            let subscriptionCallbackCalled = false;            
+            const subscriptionCallback = (state) => {
+                assert.equal(target.state.get('value'), 5, 'state.get("value")');
+                assert.equal(target.$state.value, 5, '$state.value');    
+                subscriptionCallbackCalled = true;
+            }
+            const unsubscribe = target.subscribe(subscriptionCallback);
+            
+            target.signals.updateValue(5);
+            assert.ok(subscriptionCallbackCalled);
+            
+            unsubscribe();
+            subscriptionCallbackCalled = false;
+            target.signals.updateValue(6);
         });         
                
     });

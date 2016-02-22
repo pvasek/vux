@@ -1,9 +1,26 @@
 import * as Immutable from 'immutable';
 import * as _ from 'lodash';
-import { IModel, IModelTemplate } from './types';
+import { IModel, IModelTemplate, StateType, FromStateType, ToStateType } from './types';
 import { buildSignalsObject, buildInitialStateObject, buildStateProxyObject } from './utils';
 
-type StateType = Immutable.Map<any, any>;
+export const defaultSettings = {
+    transformations: {
+        fromActionState: state => {
+            return state;
+        },
+        toActionState: state => {
+            return state;
+        },
+        useJsStateForActions() {
+            this.fromActionState = state => {
+                return Immutable.fromJS(state);
+            };
+            this.toActionState = state => {
+                return state.toJS();
+            }
+        }
+    }      
+};
 
 export class Model implements IModel {   
     
@@ -20,14 +37,14 @@ export class Model implements IModel {
     }
     
     key: string;
-    parent: Model;
     newState: StateType;
     state: StateType;
-    template: any;
     signals: any;
     models: any;
     $state: any;
-    
+
+    private parent: Model;
+    private template: any;    
     private subscribers = [];
 
     private toState(originalStateFormat: any): StateType {
@@ -70,16 +87,23 @@ export class Model implements IModel {
         return this.newState || this.state || this.toState(this.template.initialState);
     }
     
-    private notifySubscribers(state: StateType) {
-        //TODO:
+    private notifySubscribers() {
+        const state = this.state;
+        this.subscribers.forEach(subscriber => {
+            try {
+                subscriber(state);
+            } catch(e) {
+                console.error(e);
+            }
+        })
     }
 
     private getWholeState() {
-        return this.state;    
+        return defaultSettings.transformations.toActionState(this.state);    
     }
     
-    private setWholeState(state: StateType) {
-        this.newState = state;
+    private setWholeState(state: StateType) {        
+        this.newState = defaultSettings.transformations.fromActionState(state);
         this.propagateStateUp();
     }
     
@@ -103,13 +127,16 @@ export class Model implements IModel {
         Object.getOwnPropertyNames(this.models).forEach(key => {
             this.models[key].setState(this.getStateItem(key)); 
         });
+        this.notifySubscribers();
     }
     
     subscribe(callback: (state) => void): () => void {
         this.subscribers.push(callback);
         return () =>  {
             const subscriberIndex = this.subscribers.indexOf(callback);
-            this.subscribers.splice(subscriberIndex, 1);
+            if (subscriberIndex > -1) {
+                this.subscribers.splice(subscriberIndex, 1);
+            }
         };
     }
     

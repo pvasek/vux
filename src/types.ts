@@ -1,3 +1,7 @@
+import * as Immutable from 'immutable';
+
+export type StateType = Immutable.Map<any, any>;
+
 export interface IModel {
     key?: string;
     signals: any;    
@@ -12,6 +16,9 @@ export interface IModelTemplateActions {
 export interface IModelTemplateModels {
     [index: string]: any;//IModel;
 };
+
+export type FromStateType = (state: StateType) => any;
+export type ToStateType = (state: any) => StateType;
 
 export interface IModelTemplate {
     key?: string;
