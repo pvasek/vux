@@ -20,7 +20,9 @@ export class Model implements IModel {
         this.template = template;
         this.getStateItem = this.getStateItem.bind(this);
         this.setStateItem = this.setStateItem.bind(this);
-        this.signals = buildSignalsObject(template.actions, this.getStateItem, this.setStateItem);        
+        this.getWholeState = this.getWholeState.bind(this);
+        this.setWholeState = this.setWholeState.bind(this);
+        this.signals = buildSignalsObject(template.actions, this.getWholeState, this.setWholeState);        
         this.rebuildModels(template.models, template.initialState);
         this.rebuildStateProxy(template.initialState);
     }
@@ -28,16 +30,7 @@ export class Model implements IModel {
     private toState(originalStateFormat: any): StateType {
         return  Immutable.fromJS(originalStateFormat);
     }
-    
-    private getStateItem(key: string): any {
-        return this.state.get(key);
-    }
-    
-    private setStateItem(key: string, value: any) {
-        this.newState = this.state.set(key, value);
-        this.propagateStateUp();
-    }
-    
+        
     private propagateStateUp() {
         
         const ownState = this.getCurrentState();
@@ -72,6 +65,24 @@ export class Model implements IModel {
     
     private getCurrentState() {
         return this.newState || this.state || this.toState(this.template.initialState);
+    }
+
+    private getWholeState() {
+        return this.state;    
+    }
+    
+    private setWholeState(state: StateType) {
+        this.newState = state;
+        this.propagateStateUp();
+    }
+    
+    private getStateItem(key: string): any {
+        return this.state.get(key);
+    }
+    
+    setStateItem(key: string, value: any) {
+        this.newState = this.state.set(key, value);
+        this.propagateStateUp();
     }
     
     initialize() {

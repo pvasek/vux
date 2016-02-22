@@ -11,7 +11,7 @@ describe('Utils:', () => {
                 test1: (state, arg1 = '') => state + 'B' + arg1
             };
             let lastState = '';
-            const result = buildSignalsObject(actions, key => 'A', (key, state) => lastState = state);
+            const result = buildSignalsObject(actions, () => 'A', state => lastState = state);
             assert.ok(result.test1);
             result.test1();
             assert.equal(lastState, 'AB')
@@ -60,20 +60,22 @@ describe('Utils:', () => {
             assert.ok(result.message);
             assert.equal(result.message, 'messageValue');
         });
-        
-        it('Should proxy state setter', () => {
-            const initalState = {
-                message: 'messageValue'
-            };            
-            let lastValue = null;
-            const setter = (key, value) => {
-                assert.equal(key, 'message', 'setter.key');
-                lastValue = value;
-            }
-            const result = buildStateProxyObject(initalState, null, key => initalState[key], setter);
-            result.message = 'newMessageValue';
-            assert.equal(lastValue, 'newMessageValue');
-        });
+
+        // this is not supported
+                
+        // it('Should proxy state setter', () => {
+        //     const initalState = {
+        //         message: 'messageValue'
+        //     };            
+        //     let lastValue = null;
+        //     const setter = (key, value) => {
+        //         assert.equal(key, 'message', 'setter.key');
+        //         lastValue = value;
+        //     }
+        //     const result = buildStateProxyObject(initalState, null, key => initalState[key], setter);
+        //     result.message = 'newMessageValue';
+        //     assert.equal(lastValue, 'newMessageValue');
+        // });
 
         it('Should proxy to models', () => {
             const model: IModel = {

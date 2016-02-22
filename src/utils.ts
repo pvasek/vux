@@ -1,14 +1,17 @@
 import * as _ from 'lodash';
 import { IModelTemplateActions, IModelSignals, IModelTemplateModels } from './types';
 
+export type GetState = () => any;
+export type SetState = (state: any) => void;
+
 export type GetStateItem = (key: string) => any;
 export type SetStateItem = (key: string, state: any) => void;
 export type ToState = (originalStateFormat: any) => any;
 
 export const buildSignalsObject = (
     actions: IModelTemplateActions, 
-    getStateItem: GetStateItem, 
-    setStateItem: SetStateItem): IModelSignals => {
+    getState: GetState, 
+    setState: SetState): IModelSignals => {
 
     if (!actions) {
         return {};
@@ -16,8 +19,9 @@ export const buildSignalsObject = (
     
     const signalToAction = (key: string, action: Function) => {
         return (...args) => { 
-            const actionResult = action(getStateItem(key), ...args);
-            setStateItem(key, actionResult);
+            const oldState = getState();
+            const newState = action(oldState, ...args);
+            setState(newState);
         };
     };
     
@@ -45,11 +49,11 @@ export const buildStateProxyObject = (initialState: any, models: IModelTemplateM
             return getStateItem(key); 
         } 
     };
-    const stateSetter = function(key: string) { 
-        return function(value: any) {
-            return setStateItem(key, value); 
-        } 
-    };
+    // const stateSetter = function(key: string) { 
+    //     return function(value: any) {
+    //         return setStateItem(key, value); 
+    //     } 
+    // };
 
 
     let proxy = models ? Object.getOwnPropertyNames(models).reduce(function(result, key) {
@@ -61,8 +65,8 @@ export const buildStateProxyObject = (initialState: any, models: IModelTemplateM
 
     proxy = initialState ? Object.getOwnPropertyNames(initialState).reduce(function(result, key) {
         Object.defineProperty(result, key, { 
-            get: stateGetter(key),
-            set: stateSetter(key) 
+            get: stateGetter(key)
+            //, set: stateSetter(key) 
         });
         return result;
     }, proxy) : proxy;
