@@ -12,24 +12,10 @@ const modelTemplate = {
         decrement: (state) => ({ value: state.value - 1 }), 
         set: (state, value) => ({ value: value }),
         reset: (state) => ({ value: 0 })
-    },
-    models: {
-        left: ({P: 'CREATE MODEL'}),
-        right: ({P: 'CREATE MODEL'}),
     }
 }
 
-export const createModel = () => new Model({
-    initialState: {
-        value: 0
-    },  
-    actions: {
-        increment: (state) => ({ value: state.value + 1 }), 
-        decrement: (state) => ({ value: state.value - 1 }), 
-        set: (state, value) => ({ value: value }),
-        reset: (state) => ({ value: 0 })
-    }
-});
+export const createModel = () => new Model(modelTemplate);
 
 export class View extends Component<any,{}> {
 
@@ -38,11 +24,11 @@ export class View extends Component<any,{}> {
         const model = this.props.model;
         return (
             <div style={counterStyle}>
-                <input ref="input" type="text" onChange={model.set} value={model.value}/>
+                <input ref="input" type="text" onChange={model.signals.set} value={model.$state.value}/>
                 {/*<span>{props.model.value}</span>*/}                
-                <button onClick={model.increment}>+</button>
-                <button onClick={model.decrement}>-</button>
-                <button onClick={model.reset}>reset</button>
+                <button onClick={model.signals.increment}>+</button>
+                <button onClick={model.signals.decrement}>-</button>
+                <button onClick={model.signals.reset}>reset</button>
             </div>
         );        
     }

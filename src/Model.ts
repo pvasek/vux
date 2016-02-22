@@ -5,15 +5,7 @@ import { buildSignalsObject, buildInitialStateObject, buildStateProxyObject } fr
 
 type StateType = Immutable.Map<any, any>;
 
-export class Model implements IModel {
-    key: string;
-    parent: Model;
-    newState: StateType;
-    state: StateType;
-    template: any;
-    signals: any;
-    models: any;
-    $state: any;
+export class Model implements IModel {   
     
     constructor(template: IModelTemplate) {
         this.key = template.key || 'ROOT';
@@ -27,6 +19,17 @@ export class Model implements IModel {
         this.rebuildStateProxy(template.initialState);
     }
     
+    key: string;
+    parent: Model;
+    newState: StateType;
+    state: StateType;
+    template: any;
+    signals: any;
+    models: any;
+    $state: any;
+    
+    private subscribers = [];
+
     private toState(originalStateFormat: any): StateType {
         return  Immutable.fromJS(originalStateFormat);
     }
@@ -66,6 +69,10 @@ export class Model implements IModel {
     private getCurrentState() {
         return this.newState || this.state || this.toState(this.template.initialState);
     }
+    
+    private notifySubscribers(state: StateType) {
+        //TODO:
+    }
 
     private getWholeState() {
         return this.state;    
@@ -96,6 +103,14 @@ export class Model implements IModel {
         Object.getOwnPropertyNames(this.models).forEach(key => {
             this.models[key].setState(this.getStateItem(key)); 
         });
+    }
+    
+    subscribe(callback: (state) => void): () => void {
+        this.subscribers.push(callback);
+        return () =>  {
+            const subscriberIndex = this.subscribers.indexOf(callback);
+            this.subscribers.splice(subscriberIndex, 1);
+        };
     }
     
     updateModels(models: any) {
