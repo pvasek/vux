@@ -7,12 +7,6 @@ import { DataColumn } from './reactComponents/DataColumn';
 import { View as Pager, createModel as pagerCreateModel } from './components/Pager';
 import { View as Table, createModel as tableCreateModel } from './components/Table';
 
-const actions = {
-    NEW_ITEM: 'NEW_ITEM',
-    DELETE: 'DELETE',
-    DATA_LOADED: 'DATA_LOADED'
-};
-
 export const createModel = () => new Model({
     
     models: {
@@ -22,7 +16,7 @@ export const createModel = () => new Model({
     
     actions: {        
         delete(state, ids) {
-            
+            //TODO            
         }
     }
     
