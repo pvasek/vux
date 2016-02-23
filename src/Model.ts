@@ -62,7 +62,13 @@ export class Model implements IModel {
             return acc; 
         }, {});
         
-        this.newState = ownState.merge(modelsState);
+        const newState = ownState.merge(modelsState);
+        
+        if (Immutable.is(newState, this.state)) {
+            return;
+        }
+        
+        this.newState = newState;
         
         if (this.parent) {
             this.parent.propagateStateUp();
