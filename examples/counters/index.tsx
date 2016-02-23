@@ -10,11 +10,10 @@ defaultSettings.transformations.useJsStateForActions();
 
 const model = createModel();
 
-const render = () => {
+model.subscribe(() => {
     console.log('rendering... ', model.state ? model.state.toJS() : {});
-    ReactDOM.render(React.createElement(View, {model}), appElement)
-};
+    ReactDOM.render(React.createElement(View, {model}), appElement)    
+});
 
-model.subscribe(render);
 model.initialize();
 
