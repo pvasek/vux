@@ -34,6 +34,7 @@ export class Model implements IModel {
         this.signals = buildSignalsObject(template.actions, this.getWholeState, this.setWholeState);        
         this.rebuildModels(template.models, template.initialState);
         this.rebuildStateProxy(template.initialState);
+        this.state = buildInitialStateObject(this.template.initialState, this.models, this.toState);
     }
     
     key: string;
@@ -79,12 +80,19 @@ export class Model implements IModel {
         });                               
     }
     
-    private rebuildStateProxy(state = this.state) {
-        this.$state = buildStateProxyObject(state, this.models, this.getStateItem, this.setStateItem);;
+    private rebuildStateProxy(state = this.state) {        
+        const getStateItem = key => {
+            const value = this.getStateItem(key);
+            const isImmutable = Immutable.Map.isMap(value) 
+                || Immutable.List.isList(value)
+                || Immutable.Set.isSet(value); 
+            return isImmutable ? value.toJS() : value;
+        };
+        this.$state = buildStateProxyObject(state, this.models, getStateItem, this.setStateItem);;
     }
     
     private getCurrentState() {
-        return this.newState || this.state || this.toState(this.template.initialState);
+        return this.newState || this.state;
     }
     
     private notifySubscribers() {
@@ -141,9 +149,10 @@ export class Model implements IModel {
     }
     
     updateModels(models: any) {
+        const originalState = this.state;
         this.rebuildModels(models, this.state);
-        const initalState = buildInitialStateObject(this.template.initialState, this.models, this.toState);
-        this.newState = initalState.merge(this.state);
+        const initalState = buildInitialStateObject(this.template.initialState, this.models, this.toState);        
+        this.newState = initalState.merge(originalState);
         this.propagateStateUp();
         this.rebuildStateProxy();
     }

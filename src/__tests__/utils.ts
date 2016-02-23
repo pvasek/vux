@@ -21,13 +21,13 @@ describe('Utils:', () => {
         
     });
     
-    describe('buildStateObject: ', () => {
+    describe('buildInitialStateObject: ', () => {
         
-        it('Should map initalState to state', () => {
-            const initalState = {
+        it('Should map initialState to state', () => {
+            const initialState = {
                 message: 'test'
             };            
-            const result = buildInitialStateObject(initalState, null, state => state);
+            const result = buildInitialStateObject(initialState, null, state => state);
             assert.ok(result.message);
         });
         
@@ -45,7 +45,33 @@ describe('Utils:', () => {
             }
             const result = buildInitialStateObject(null, models, state => state);
             assert.ok(result.submodel, 'submodel');
+            assert.ok(result.submodel.message2, 'submodel.message2');            
+        });
+
+        it('Should map nested models to state', () => {
+            const nestedModel = {
+                template: {
+                    initialState: ({nestedProperty: 'test2'})
+                }
+            }
+            const model = {
+                template: {
+                    initialState: ({ message2: 'test' })
+                },
+                $state: {},                
+                signals: {},
+                models: {
+                    nested: nestedModel
+                }
+            };
+            const models = {
+                submodel: model
+            }
+            const result = buildInitialStateObject(null, models, state => state);
+            assert.ok(result.submodel, 'submodel');
             assert.ok(result.submodel.message2, 'submodel.message2');
+            assert.ok(result.submodel.nested, 'submodel.nested');
+            assert.ok(result.submodel.nested.nestedProperty, 'submodel.nested.nestedProperty');
         });
         
     });
@@ -53,30 +79,14 @@ describe('Utils:', () => {
     describe('buildStateProxyObject', () => {
 
         it('Should proxy state getter', () => {
-            const initalState = {
+            const initialState = {
                 message: 'messageValue'
             };            
-            const result = buildStateProxyObject(initalState, null, key => initalState[key]);
+            const result = buildStateProxyObject(initialState, null, key => initialState[key]);
             assert.ok(result.message);
             assert.equal(result.message, 'messageValue');
         });
-
-        // this is not supported
-                
-        // it('Should proxy state setter', () => {
-        //     const initalState = {
-        //         message: 'messageValue'
-        //     };            
-        //     let lastValue = null;
-        //     const setter = (key, value) => {
-        //         assert.equal(key, 'message', 'setter.key');
-        //         lastValue = value;
-        //     }
-        //     const result = buildStateProxyObject(initalState, null, key => initalState[key], setter);
-        //     result.message = 'newMessageValue';
-        //     assert.equal(lastValue, 'newMessageValue');
-        // });
-
+        
         it('Should proxy to models', () => {
             const model: IModel = {
                 $state: { message2: 'message2Value' },                

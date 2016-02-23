@@ -9,22 +9,22 @@ export type SetStateItem = (key: string, state: any) => void;
 export type ToState = (originalStateFormat: any) => any;
 
 export const buildSignalsObject = (
-    actions: IModelTemplateActions, 
-    getState: GetState, 
+    actions: IModelTemplateActions,
+    getState: GetState,
     setState: SetState): IModelSignals => {
 
     if (!actions) {
         return {};
     }
-    
+
     const signalToAction = (key: string, action: Function) => {
-        return (...args) => { 
+        return (...args) => {
             const oldState = getState();
             const newState = action(oldState, ...args);
             setState(newState);
         };
     };
-    
+
     return Object.getOwnPropertyNames(actions).reduce((result, key) => {
         result[key] = signalToAction(key, actions[key]);
         return result;
@@ -32,45 +32,39 @@ export const buildSignalsObject = (
 };
 
 export const buildInitialStateObject = (initialState: any, models: IModelTemplateModels, toState: ToState): any => {
-    
-     const modelStates = models ? Object.getOwnPropertyNames(models).reduce((result, key) => {
-        result[key] = models[key].template.initialState;
+
+    const modelStates = models ? Object.getOwnPropertyNames(models).reduce((result, key) => {
+        const model = models[key];        
+        result[key] = buildInitialStateObject(model.template.initialState, model.models, state => state); //only final toState needs to be called
         return result;
     }, {}) : {};
-    
-    return toState(_.merge({}, initialState, modelStates));
+
+    return toState(_.merge({}, initialState || {}, modelStates));
 }
 
 export const buildStateProxyObject = (initialState: any, models: IModelTemplateModels, getStateItem: GetStateItem, setStateItem: SetStateItem = null): any => {
-    
-    const modelGetter = (key: string) => () => models[key].$state;
-    const stateGetter = function(key: string) { 
-        return function() {
-            return getStateItem(key); 
-        } 
-    };
-    // const stateSetter = function(key: string) { 
-    //     return function(value: any) {
-    //         return setStateItem(key, value); 
-    //     } 
-    // };
 
+    const modelGetter = (key: string) => () => models[key].$state;
+    const stateGetter = function(key: string) {
+        return function() {
+            return getStateItem(key);
+        }
+    };
 
     let proxy = models ? Object.getOwnPropertyNames(models).reduce(function(result, key) {
-        Object.defineProperty(result, key, { 
+        Object.defineProperty(result, key, {
             get: modelGetter(key)
         });
         return result;
     }, {}) : {};
 
     proxy = initialState ? Object.getOwnPropertyNames(initialState).reduce(function(result, key) {
-        Object.defineProperty(result, key, { 
+        Object.defineProperty(result, key, {
             get: stateGetter(key)
-            //, set: stateSetter(key) 
         });
         return result;
     }, proxy) : proxy;
-    
+
     return proxy;
 }
 
