@@ -16,6 +16,7 @@ the following characteristics?
 - What's wrong/bad on this approach (the implementation could be definitely better)?
 - Is it possible to integrated it with other frameworks? Which one could be a good fit?
 
+__Is this a stupid idea? Does it make sence to work on it? [Please let me know](https://github.com/pvasek/vux/issues/1)__
 ## It is just about a model object
 
 Everything is built around a model object. The model is defined by model template where 
@@ -184,6 +185,12 @@ model.subscribe(() => {
 });
 model.initialize();
 ```
+
+## Dynamic sub-models
+
+Right now the model has _updateModels(models)_ method. This updates models, 
+state and state proxy object. But because the API doens't suppor arrays in models
+definition it need to be hacked little bit more that it should be.
 
 ## Problems
 - Because the model is passed down to react components and model instance doesn't 
