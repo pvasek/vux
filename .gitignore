@@ -35,3 +35,6 @@ node_modules/
 *.DotSettings
 .vs
 .vscode
+
+!dist/vue.js
+!dist/vue.map.js
