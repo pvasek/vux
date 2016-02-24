@@ -1,6 +1,6 @@
 # Vux Experiment
 
-Is it possible to have simple API for our react applications similar to Vue.js with 
+Is it possible to have a simple API for our react applications similar to Vue.js with 
 the following characteristics?
 
 - Component composability
