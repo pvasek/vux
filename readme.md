@@ -21,6 +21,8 @@ the following characteristics?
 Everything is built around a model object. The model is defined by model template where 
 the initial state, actions, models can be defined.
 
+[Run it yourself in jsBin](https://jsbin.com/dezoras/1/edit?html,js,console)
+
 ```typescript
 export const createModel = () => new Model({
     initialState: {
@@ -47,7 +49,12 @@ You can subscribe to model for receiving changes and call the actions through th
 Before the model object can be used it needs to be initialized. That creates initial 
 state which is built from template initial state and sub-models.
 
+Because internally the state is hold in immutable structure if we want to have states as js 
+objects in our actions we need to call _useJsStateForActions_ method.
+
 ```typescript
+defaultSettings.transformations.useJsStateForActions();
+
 const model = createModel();
 model.subscribe(() => {
     console.log(model.state.toJS());
