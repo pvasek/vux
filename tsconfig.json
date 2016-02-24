@@ -2,7 +2,7 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
-        "outDir": "dist/ts",
+        "outDir": "temp/ts",
         "jsx": "react",
         "rootDir": ".",
         "sourceMap": true

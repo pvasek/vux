@@ -10,7 +10,6 @@ tmp/
 publish/
 artifacts/
 out/
-dist/
 _ReSharper*/
 *.ReSharper
 *.user
@@ -35,6 +34,3 @@ node_modules/
 *.DotSettings
 .vs
 .vscode
-
-!dist/vue.js
-!dist/vue.map.js

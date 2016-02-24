@@ -8,7 +8,7 @@ var gutil = require('gulp-util');
 
 gulp.task('clean', function () {
     return del([
-        './dist/ts/**/*'
+        './temp/ts/**/*'
     ]);
 });
 
@@ -21,7 +21,7 @@ gulp.task('test:watch', ['test'], function() {
 });
 
 gulp.task('test-plugin', function() {
-    return gulp.src(['./dist/ts/**/**/__tests__/*.js'], { read: false })
+    return gulp.src(['./temp/ts/**/**/__tests__/*.js'], { read: false })
         .pipe(mocha({ reporter: 'spec' }))
         .on('error', function(err) { 
             gutil.log(err); 
@@ -30,5 +30,5 @@ gulp.task('test-plugin', function() {
 });
 
 gulp.task('test', ['ts'], shell.task([
-  'mocha ./dist/ts/**/**/__tests__/*.js',
+  'mocha ./temp/ts/**/**/__tests__/*.js',
 ], { ignoreErrors: true }));
