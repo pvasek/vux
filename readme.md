@@ -37,13 +37,21 @@ export const createModel = () => new Model({
 });
 ```
 
+Model Template includes: 
+- initialState: initial state as plain js object
+- actions: reducers
+- models: linked sub-models
+
+Model includes:
+- state: immutable.js structure
+- $state: proxy which makes accessible state as js object 
+- signals: action triggers
+- models: linked sub-models
+ 
 The mapping from template to model could be described as:
 - initialState + models => state
 - actions => signals
 - models => models
-
-In addition there is also $state proxy which make accessible state as JS object 
-(state is held in immutable.js for now).
 
 You can subscribe to model for receiving changes and call the actions through the signals.
 Before the model object can be used it needs to be initialized. That creates initial 
@@ -99,10 +107,15 @@ model.subscribe(() => {
 model.initialize();
 ```
 
+## Problems
+- Because the model is passed down to react components and model instance doesn't 
+change over time if we want to implement _shouldComponentUpdate()_ we need to pass
+the model.state as well.
+
 ## Theoretical directions
 
 __Redux way:__ Right now the signals are just proxied to the methods. It could 
 be possible to dispatch them up to the tree to the redux store and create reducer 
 which would pass them down again. That could enable integration with redux.
 
-__Cycle.js way__: Could we use cycle.js drivers and connect them to the signals?
+__Cycle.js way__: Could we chagne signals to stream and then use cycle.js drivers?
