@@ -8,8 +8,10 @@ module.exports = {
   },
   output: {
     library: 'Vux',
-    libraryTarget: 'var',
-    filename: './dist/vux.js'
+    libraryTarget: 'umd',
+    umdNamedDefine: true,    
+    filename: 'vux.js',
+    path: './dist'
   },
   resolve: {
     extensions: ['', '.ts', '.tsx', '.js', '.jsx']
