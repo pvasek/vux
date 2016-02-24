@@ -1,5 +1,5 @@
 import * as Immutable from 'immutable';
-import * as _ from 'lodash';
+import './Object.assign';
 import { IModel, IModelTemplate, StateType, FromStateType, ToStateType } from './types';
 import { buildSignalsObject, buildInitialStateObject, buildStateProxyObject } from './utils';
 
@@ -78,7 +78,7 @@ export class Model implements IModel {
     }
     
     private rebuildModels(models: any,  state: StateType) {
-        this.models = _.merge({}, models);
+        this.models = Object.assign({}, models);
         Object.getOwnPropertyNames(this.models).forEach(key => {
             const model = this.models[key];
             model.key = key;

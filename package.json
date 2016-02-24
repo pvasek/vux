@@ -12,15 +12,12 @@
   "dependencies": {
     "classnames": "^2.2.3",
     "immutable": "^3.7.6",
-    "lodash": "^4.5.0",
     "react": "^0.14.7",
     "react-dom": "^0.14.7"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "del": "^2.2.0",
-    "extract-text-webpack-plugin": "^1.0.1",
-    "faucet": "0.0.1",
     "gulp": "^3.9.1",
     "gulp-mocha": "^2.2.0",
     "gulp-shell": "^0.5.2",

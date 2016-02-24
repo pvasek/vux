@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import './Object.assign';
 import { IModelTemplateActions, IModelSignals, IModelTemplateModels } from './types';
 
 export type GetState = () => any;
@@ -39,7 +39,7 @@ export const buildInitialStateObject = (initialState: any, models: IModelTemplat
         return result;
     }, {}) : {};
 
-    return toState(_.merge({}, initialState || {}, modelStates));
+    return toState(Object.assign({}, initialState || {}, modelStates));
 }
 
 export const buildStateProxyObject = (initialState: any, models: IModelTemplateModels, getStateItem: GetStateItem, setStateItem: SetStateItem = null): any => {
