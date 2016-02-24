@@ -7,6 +7,8 @@ module.exports = {
       index: './src/index.ts'
   },
   output: {
+    library: 'Vux',
+    libraryTarget: 'umd',
     filename: './dist/vux.js'
   },
   resolve: {
