@@ -78,6 +78,10 @@ model.signals.set(10);
 console.log(model.$state.value);
 ```
 
+## 
+
+## Using with React
+
 If you want to use it with react you just need to pass it through props to your react component.
 
 ```typescript
