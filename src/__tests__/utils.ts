@@ -1,7 +1,12 @@
 import { describe, it } from 'mocha';
 import { assert } from 'chai';
 import { IModel } from '../types';
-import { buildSignalsObject, buildInitialStateObject, buildStateProxyObject } from '../utils';
+import { 
+    buildSignalsObject, 
+    buildInitialStateObject, 
+    buildStateProxyObject,
+    buildInputsAndTargets
+} from '../utils';
 
 describe('Utils:', () => {
     describe('buildSignalsObject:', () => {        
@@ -103,4 +108,19 @@ describe('Utils:', () => {
         });
 
     });
+    
+    describe('buildInputsAndTargets', () => {
+        it('Should create sources from target object', () => {
+            const result = buildInputsAndTargets({click$: (e) => e.count });
+            assert.ok(result.inputs.click$);
+            assert.ok(result.targets.click$);
+            let called = false;
+            result.inputs.click$.subscribe(i => {
+                assert.equal(i, 5);
+                called = true;
+            })
+            result.targets.click$({ count: 5 });
+            assert.ok(called);
+        });
+    })
 });

@@ -1,4 +1,5 @@
 import './Object.assign';
+import { Subject, Observable } from '@reactivex/rxjs';
 import { IModelTemplateActions, IModelSignals, IModelTemplateModels } from './types';
 
 export type GetState = () => any;
@@ -25,7 +26,7 @@ export const buildSignalsObject = (
         };
     };
 
-    return Object.getOwnPropertyNames(actions).reduce((result, key) => {
+    return Object.keys(actions).reduce((result, key) => {
         result[key] = signalToAction(key, actions[key]);
         return result;
     }, {});
@@ -33,14 +34,14 @@ export const buildSignalsObject = (
 
 export const buildInitialStateObject = (initialState: any, models: IModelTemplateModels, toState: ToState): any => {
 
-    const modelStates = models ? Object.getOwnPropertyNames(models).reduce((result, key) => {
+    const modelStates = models ? Object.keys(models).reduce((result, key) => {
         const model = models[key];        
         result[key] = buildInitialStateObject(model.template.initialState, model.models, state => state); //only final toState needs to be called
         return result;
     }, {}) : {};
 
     return toState(Object.assign({}, initialState || {}, modelStates));
-}
+};
 
 export const buildStateProxyObject = (initialState: any, models: IModelTemplateModels, getStateItem: GetStateItem, setStateItem: SetStateItem = null): any => {
 
@@ -51,7 +52,7 @@ export const buildStateProxyObject = (initialState: any, models: IModelTemplateM
         }
     };
 
-    let proxy = models ? Object.getOwnPropertyNames(models).reduce(function(result, key) {
+    let proxy = models ? Object.keys(models).reduce(function(result, key) {
         Object.defineProperty(result, key, {
             get: modelGetter(key)
         });
@@ -66,5 +67,24 @@ export const buildStateProxyObject = (initialState: any, models: IModelTemplateM
     }, proxy) : proxy;
 
     return proxy;
-}
+};
 
+export interface IInputsTargets {
+    inputs: any;
+    targets: any;
+};
+
+export const buildInputsAndTargets = (targetObj: any = {}): IInputsTargets => {
+    return Object.keys(targetObj).reduce((res, i) => {
+        const subject = new Subject();      
+        const mappingFunction = targetObj[i];  
+        const targetHandler = (...args) => {
+            subject.next(mappingFunction(...args));
+        };
+        
+        res.inputs[i] = subject;    
+        res.targets[i] = targetHandler;
+            
+        return res; 
+    }, { targets: {}, inputs: {} });
+};

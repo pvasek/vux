@@ -7,7 +7,6 @@ describe('micro cycle', () => {
 
     it('should run', () => {
         let called = false;
-        debugger;
         const cycle = (sources) => {
             sources.driver.subscribe(i => {
                 assert.equal(i, 5);

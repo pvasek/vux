@@ -1,6 +1,7 @@
 import { Subject, Observable } from '@reactivex/rxjs';
+import { CycleFunction, IModel } from './types';
 
-export const run = (cycle: (any) => any, drivers: any, inputs: any = {}) => {
+export const run = (cycle: CycleFunction, drivers: any, inputs: any = {}, model?: IModel) => {
 
     const sources = Object
         .keys(drivers)
@@ -10,7 +11,7 @@ export const run = (cycle: (any) => any, drivers: any, inputs: any = {}) => {
             return acc;
         }, {})
         
-    const sinks = cycle(Object.assign(inputs, sources)) || {};
+    const sinks = cycle(Object.assign(inputs, sources), model) || {};
     Object.keys(sinks)
         .map(i => ({ driver: drivers[i], in$: sinks[i], out$: sources[i]}))
         .forEach(({ driver, in$, out$ }) => {

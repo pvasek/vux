@@ -6,7 +6,7 @@ export interface IModel {
     key?: string;
     signals: any;    
     models: any;
-    $state: any;
+    $state: any;    
 };
 
 export interface IModelTemplateActions {
@@ -19,12 +19,15 @@ export interface IModelTemplateModels {
 
 export type FromStateType = (state: StateType) => any;
 export type ToStateType = (state: any) => StateType;
+export type CycleFunction = (sources: any, model: IModel) => any;
 
 export interface IModelTemplate {
     key?: string;
     initialState?: any;
     actions?: IModelTemplateActions;
     models?: IModelTemplateModels;
+    targets?: any,
+    cycle?: CycleFunction
 };
 
 //export interface IModelSignals {}

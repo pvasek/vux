@@ -6,6 +6,8 @@
         "jsx": "react",
         "rootDir": ".",
         "sourceMap": true
+        //"inlineSourceMap": true,
+        //"inlineSources": true       
     },
     
     "exclude": [
@@ -14,6 +16,7 @@
         "node_modules",
         
         "dist",        
+        "temp",
         "examples/counters/dist"
     ]
 }

@@ -1,7 +1,13 @@
 import * as Immutable from 'immutable';
 import './Object.assign';
 import { IModel, IModelTemplate, StateType, FromStateType, ToStateType } from './types';
-import { buildSignalsObject, buildInitialStateObject, buildStateProxyObject } from './utils';
+import { 
+    buildSignalsObject, 
+    buildInitialStateObject, 
+    buildStateProxyObject,
+    buildInputsAndTargets
+} from './utils';
+import { run, httpDriver } from './micro-cycle';
 
 export const defaultSettings = {
     transformations: {
@@ -35,6 +41,10 @@ export class Model implements IModel {
         this.rebuildModels(template.models, template.initialState);
         this.rebuildStateProxy(template.initialState);
         this.state = buildInitialStateObject(this.template.initialState, this.models, this.toState);
+        
+        if (this.template.cycle) {
+            this.hookupCycle(this.template.cycle, this.template.targets);
+        }
     }
     
     key: string;
@@ -43,11 +53,18 @@ export class Model implements IModel {
     signals: any;
     models: any;
     $state: any;
+    $targets: any;
 
     private parent: Model;
     private template: any;    
     private subscribers = [];
 
+    private hookupCycle(cycle: (any) => any, targetObj: any) {        
+        const inputsTargets = buildInputsAndTargets(targetObj);
+        this.$targets = inputsTargets.targets;
+        run(cycle, { http$: httpDriver }, inputsTargets.inputs, this);    
+    }
+    
     private toState(originalStateFormat: any): StateType {
         return  Immutable.fromJS(originalStateFormat);
     }
