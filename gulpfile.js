@@ -29,6 +29,10 @@ gulp.task('test-plugin', function() {
         });
 });
 
+gulp.task('test:debug', ['ts'], shell.task([
+  'mocha --debug-brk ./temp/ts/**/**/__tests__/*.js',
+], { ignoreErrors: true }));
+
 gulp.task('test', ['ts'], shell.task([
   'mocha ./temp/ts/**/**/__tests__/*.js',
 ], { ignoreErrors: true }));
