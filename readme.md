@@ -1,5 +1,9 @@
 # Vux Experiment
 
+**I found there is already vue like implementation for react [mobx](https://github.com/mobxjs/mobx). The only missing piece is immutablity of the model but maybe we don't need it.**
+
+**Some ideas from this experiment were transfered to  [mobx-model](https://github.com/pvasek/mobx-model).**
+
 Is it possible to have a simple API for our react applications similar to Vue.js with 
 the following characteristics?
 
