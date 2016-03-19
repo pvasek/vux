@@ -1,6 +1,6 @@
 # Vux Experiment
 
-**I found there is already vue like implementation for react [mobx](https://github.com/mobxjs/mobx). The only missing piece is immutablity of the model but maybe we don't need it.**
+**I found there is already vue like implementation for react [mobx](https://github.com/mobxjs/mobx).**
 
 **Some ideas from this experiment were transfered to  [mobx-model](https://github.com/pvasek/mobx-model).**
 
